@@ -31,13 +31,13 @@
 -->
 
  <head>
-  <meta charset="utf-8">
+  <meta charset="utf-8"> <!-- loads all the sections -->
   <title>Photo Transform</title>
-  <meta name="viewport" content="width=device-width, initial-scale=.7">
-  <meta name="apple-mobile-web-app-capable" content="yes">
-  <link rel="stylesheet" href="https://code.jquery.com/mobile/1.3.2/jquery.mobile-1.3.2.min.css" />
-  <script src="https://code.jquery.com/jquery-1.9.1.min.js"></script>
-  <script src="https://code.jquery.com/mobile/1.3.2/jquery.mobile-1.3.2.min.js"></script>
+  <meta name="viewport" content="width=device-width, initial-scale=.7"> <!-- loads all the sections -->
+  <meta name="apple-mobile-web-app-capable" content="yes"> <!-- loads all the sections -->
+  <link rel="stylesheet" href="https://code.jquery.com/mobile/1.3.2/jquery.mobile-1.3.2.min.css" /> <!-- loads jQuery sections -->
+  <script src="https://code.jquery.com/jquery-1.9.1.min.js"></script> <!-- loads jQuery sections -->
+  <script src="https://code.jquery.com/mobile/1.3.2/jquery.mobile-1.3.2.min.js"></script> <!-- loads jQuery sections -->
 
  <script>
   var docMod = document.lastModified; // gets last modified date and time of the index.html file
@@ -46,71 +46,71 @@
 /* detectVerticalSquash & drawImageIOSFix = are functions that are critical due to a flaw in the iPhone camera software that squishes any photos displayed on an HTML5 canvas element. https://github.com/stomita/ios-imagefile-megapixel
 */
  function detectVerticalSquash(img) { //ensures the picture is not squished. 
-  var iw = img.naturalWidth, ih = img.naturalHeight;
-  var canvas = document.createElement('canvas');
-  canvas.width = 1;
-  canvas.height = ih;
-  var ctx = canvas.getContext('2d');
-  ctx.drawImage(img, 0, 0);
-  var data = ctx.getImageData(0, 0, 1, ih).data;
-  var sy = 0;
-  var ey = ih;
-  var py = ih;
-  while (py > sy) {
-   var alpha = data[(py - 1) * 4 + 3];
-   if (alpha === 0) {
-    ey = py;
-   } 
+       var iw = img.naturalWidth, ih = img.naturalHeight; //creates a variable and understands what each variable means. 
+       var canvas = document.createElement('canvas'); //creates a variable to call later
+             canvas.width = 1;  //defines the width
+             canvas.height = ih; //defines the height
+       var ctx = canvas.getContext('2d'); 
+  ctx.drawImage(img, 0, 0); //the canvas is created
+          var data = ctx.getImageData(0, 0, 1, ih).data;  // The RBG is defined for the pixel
+          var sy = 0; //sy means the starting position
+          var ey = ih; //ey means the ending position
+          var py = ih; //py means the testing position
+     while (py > sy) {
+         var alpha = data[(py - 1) * 4 + 3];
+     if (alpha === 0) {
+         ey = py; 
+     } 
    else {
-    sy = py;
+         sy = py;
    }
-   py = (ey + sy) >> 1;
+      py = (ey + sy) >> 1; //this creates the temporary pixel position helping understand the first pixel's beginning position. This is done by an if statement by mentioning how if the beginning position is 0, the squish starts above and move ey upward. Otherwise the pixel is normal and the sy can move downward. 
   }
   var ratio = (py / ih);
-  return (ratio===0)?1:ratio;
+  return (ratio===0)?1:ratio; //helps understand how much to squish it by
  }
 
- function drawImageIOSFix(ctx, img, sx, sy, sw, sh, dx, dy, dw, dh) {
+ function drawImageIOSFix(ctx, img, sx, sy, sw, sh, dx, dy, dw, dh) { //brings the correct ratio, makes the image taller and fixes the errors. 
   var vertSquashRatio = detectVerticalSquash(img);
   ctx.drawImage(img, sx, sy, sw, sh, dx, dy, dw, dh / vertSquashRatio);
  }
 
 /* window.onload necessary to keep javascripts from running before the app gets a chance to load entirely. */
  window.onload = function() { //lets the window load before execution
-  var fileInput = document.getElementById('fileInput');
-  var messageDisplayArea = document.getElementById('messageDisplayArea');
+      var fileInput = document.getElementById('fileInput');
+      var messageDisplayArea = document.getElementById('messageDisplayArea');
   /* fileInput.addEventListener looks for any change in the <input> tag indicating that the user has selected a file (picture). */
   fileInput.addEventListener('change', function(e) {//whenver the file is selected, the code is triggered.
-    var file = fileInput.files[0];
-    var imageType = /image.*/;
+      var file = fileInput.files[0];
+      var imageType = /image.*/;
     /* if (file.type.match(imageType)) checks that the selected file is indeed an image. */
     if (file.type.match(imageType)) {
       /* new FileReader(); and reader.onload start some kind of file reading process in javaScript. I do not understand why this is necessary although it may simply slow things down to let the image load. */
-      var reader = new FileReader();
+       var reader = new FileReader();
       reader.onload = function(e) { //after the file is done reading, this funciton is activated. 
         /* messageDisplayArea.innerHTML not needed but allows you to send a message at this point in the program. */
-        messageDisplayArea.innerHTML = "You picked an image!";
+      messageDisplayArea.innerHTML = "You picked an image!";
         /* new Image() and img.onload start some kind of new image creation process in javaScript. I do not understand why this is necessary although it may simply slow things down to let the image load. */
-        var img = new Image();
-        img.onload = function() { //after the image is done loading, this funciton is activated. 
+      var img = new Image();
+      img.onload = function() { //after the image is done loading, this funciton is activated. 
          
           /*This finally draws the image onto the first drawing canvas. The specific canvas is referred to by "context". This is established down in the HTML part of the file just under the first <canvas> tag. If we weren't worried about fixing an iPhone bug we would use context.drawImage(image, 0, 0, img.naturalWidth, img.naturalHeight, 0, 0, 600, 500) instead of drawImageIOSFix */
         
           drawImageIOSFix(context,img, 0, 0, img.naturalWidth, img.naturalHeight, 0, 0, 600, 500);
 
           /*  +++++++++++++++ BEGIN IMAGE PROCESSING +++++++++++++++ */
-var imageData = context.getImageData(0, 0, canvas.width, canvas.height); 
-        var data = imageData.data;
+var imageData = context.getImageData(0, 0, canvas.width, canvas.height); //draws context for the canvas
+        var data = imageData.data; //brings the pixel to the rectangles and gives a variable to store these information
 
-         for (var i = 0; i < data.length; i += 4) {
-             var blue= data[i+2]; 
-           data[i] = 0; 
-            data[i+1] = 0;
-            data[i+2] = blue;
+         for (var i = 0; i < data.length; i += 4) { //created a loop using my prior experience in Comp Sci A. The loop itself goes through all the pixels in the image to create the intensity from red, blue, and green. 
+             var blue= data[i+2]; // this is the blue intensity variable.
+                  data[i] = 0;  // this is the categorization of red 
+                  data[i+1] = 0; //this is the categorization of green
+                  data[i+2] = blue; //this is the categorization of green
         
          }
 
-         ctx2.putImageData(imageData, 0, 0);
+         ctx2.putImageData(imageData, 0, 0); //ensures and results only blue image
          
           /*  ++++++++++++++++++++++++++++++++++++++++++++++++++++++ */
 
@@ -137,33 +137,33 @@ var imageData = context.getImageData(0, 0, canvas.width, canvas.height);
  </head>
 
  <body>
-  <div data-role="page">
-    <div data-role="header">
-    <h1>Primary Colors</h1></div><!-- /header -->
-    <div data-role="content">	
-      <h2>Push button to take picture.</h2>
-      <div>
-        Press orange button to create or choose image file:
+  <div data-role="page"> <!-- creates a style just like a mobile app -->
+        <div data-role="header">
+        <h1>Primary Colors</h1></div><!-- /header -->
+  <div data-role="content">	
+       <h2>Push button to take picture.</h2>
+  <div>
+        Press orange button to create or choose image file: 
         <input type="file" id="fileInput" STYLE="background-color: #FF6600;">
-      </div>
-      <div id="messageDisplayArea"></div>
+  </div> <!-- creates the header orange -->
+      <div id="messageDisplayArea"></div> <!-- creates an output statement for the image -->
       
       <canvas id="myCanvas" width=600 height=500 style="border:1px solid #d3d3d3;"></canvas>
       <script> /* This script initiates the cavas and puts the text on the canvas "myCanvas" */
-        var canvas = document.getElementById('myCanvas');
-        var context = canvas.getContext("2d");
+             var canvas = document.getElementById('myCanvas');
+             var context = canvas.getContext("2d");
         context.font = '20pt Calibri';
         context.fillStyle = "black";
         context.fillText("Original image will go here", 10, 20);
-      </script>
-      <canvas id="secondCanvas" width=600 height=500 style="border:1px solid #d3d3d3;"></canvas>    
+      </script> <!-- creates a second canvas-->
+      <canvas id="secondCanvas" width=600 height=500 style="border:1px solid #d3d3d3;"></canvas>     <!-- creates a second canvas and styles the headers-->
       <script>
-       var canvas2 = document.getElementById('secondCanvas')
-       var ctx2 = canvas2.getContext("2d")
-       ctx2.font = '20pt Calibri';
-       ctx2.fillStyle = "black";
-       ctx2.fillText("Blue image will go here", 10, 20);
-      </script>                                                                                     
+             var canvas2 = document.getElementById('secondCanvas') //introduces the second canvas varible
+             var ctx2 = canvas2.getContext("2d") //creates a 2D
+       ctx2.font = '20pt Calibri'; //creates a font for the texts 
+       ctx2.fillStyle = "black"; //creates a color for the texts 
+       ctx2.fillText("Blue image will go here", 10, 20); //tells the user what will happen that canvas
+      </script>                                                                                      
     <div data-role="footer" data-position="fixed">
       <p>DIY Diagnostics</p>
     </div><!-- /footer -->
