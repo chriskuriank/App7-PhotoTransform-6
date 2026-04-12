@@ -99,12 +99,15 @@
           drawImageIOSFix(context,img, 0, 0, img.naturalWidth, img.naturalHeight, 0, 0, 600, 500);
 
           /*  +++++++++++++++ BEGIN IMAGE PROCESSING +++++++++++++++ */
-var data2 = ctx.getImageData(0, 0, canvas.width, canvas.height); 
-        var data = imageData.data
+var imageData = context.getImageData(0, 0, canvas.width, canvas.height); 
+        var data = imageData.data;
 
-         for (var i=0, i<data.length; i +=4) {
-
-          var blue= data[i+2]; 
+         for (var i = 0; i < data.length; i += 4) {
+             var blue= data[i+2]; 
+           data[i] = 0; 
+            data[i+1] = 0;
+            data[i+2] = blue;
+        
          }
 
          ctx2.putImageData(imageData, 0, 0);
@@ -153,8 +156,14 @@ var data2 = ctx.getImageData(0, 0, canvas.width, canvas.height);
         context.fillStyle = "black";
         context.fillText("Original image will go here", 10, 20);
       </script>
-
-    </div><!-- /content -->
+      <canvas id="secondCanvas" width=600 height=500 style="border:1px solid #d3d3d3;"></canvas>    
+      <script>
+       var canvas2 = document.getElementById('secondCanvas')
+       var ctx2 = canvas2.getContext("2d")
+       ctx2.font = '20pt Calibri';
+       ctx2.fillStyle = "black";
+       ctx2.fillText("Blue image will go here", 10, 20);
+      </script>                                                                                     
     <div data-role="footer" data-position="fixed">
       <p>DIY Diagnostics</p>
     </div><!-- /footer -->
